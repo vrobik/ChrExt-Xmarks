@@ -1,0 +1,505 @@
+/*
+ * Outer shell to drive an upload
+ */
+function StartUpload(params) {
+    var uploadData = {toProcess: [], processed: [], action: "upload"};
+    var uploadTypes = [{type: "bookmarks", defaultEnabled: "true", ds: BookmarkDatasource, suffix: "", fn: ProcessSingleUpload},
+                       {type: "tabs", defaultEnabled: "false", force: true, fn: WriteTabs}];
+    for (var i = 0; i < uploadTypes.length; i++) {
+        if (!params.dataType || params.dataType == uploadTypes[i].type) {
+            uploadData.toProcess.push(uploadTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(uploadData);
+    UpdateSyncUI();
+
+    // Ensure user is authenticated before doing anything
+    var request = new Request("POST", {"host": Xmarks.Settings.Get("syncserver"), "path": "/sync/bookmarks/status"}, Xmarks.GetRequestArgs());
+    request.Start(EnsureAuthCallback);
+
+    function EnsureAuthCallback(response) {
+        if (!ResponseOK(response)) {
+            // User canceled, don't do anything
+            Xmarks.LogWrite("User canceled status call, not uploading");
+            ResetSyncAction();
+        } else {
+            ProcessSyncType();
+        }
+    }
+}
+
+/*
+ * Outer shell to drive a merge
+ */
+function StartMerge(params) {
+    var mergeData = {toProcess: [], processed: [], action: "merge"};
+    var mergeTypes = [{type: "bookmarks", defaultEnabled: "true", ds: BookmarkDatasource, suffix: "", mergeType: params.type, fn: ProcessSingleMerge},
+                      {type: "tabs", defaultEnabled: "false"}];
+    for (var i = 0; i < mergeTypes.length; i++) {
+        if (!params.dataType || params.dataType == mergeTypes[i].type) {
+            mergeData.toProcess.push(mergeTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(mergeData);
+    ProcessSyncType();
+}
+
+/*
+ * Outer shell to drive a sync
+ */
+function StartSync(params) {
+    var syncData = {toProcess: [], processed: [], action: "synchronization"};
+    var syncTypes = [{type: "bookmarks", defaultEnabled: "true", ds: BookmarkDatasource, suffix: "", fn: ProcessSingleSync},
+                     {type: "tabs", defaultEnabled: "true", force: false, fn: WriteTabs}];
+    for (var i = 0; i < syncTypes.length; i++) {
+        if (!params.dataType || params.dataType == syncTypes[i].type) {
+            syncData.toProcess.push(syncTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(syncData);
+    ProcessSyncType();
+}
+
+/*
+ * Outer shell to drive a repair
+ */
+function StartRepair(params) {
+    var syncData = {toProcess: [], processed: [], action: "repair"};
+    var syncTypes = [{type: "bookmarks", defaultEnabled: "true", ds: BookmarkDatasource, suffix: "", fn: ProcessSingleRepair}];
+
+    for (var i = 0; i < syncTypes.length; i++) {
+        if (!params.dataType || params.dataType == syncTypes[i].type) {
+            syncData.toProcess.push(syncTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(syncData);
+    ProcessSyncType();
+}
+
+
+/*
+ * Outer shell to drive a download
+ */
+function StartDownload(params) {
+    var downloadData = {toProcess: [], processed: [], action: "download"};
+    var downloadTypes = [{type: "bookmarks", defaultEnabled: "true", ds: BookmarkDatasource, suffix: "", fn: ProcessSingleDownload},
+                         {type: "tabs", defaultEnabled: "false"}];
+    for (var i = 0; i < downloadTypes.length; i++) {
+        if (!params.dataType || params.dataType == downloadTypes[i].type) {
+            downloadData.toProcess.push(downloadTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(downloadData);
+    ProcessSyncType();
+}
+
+/*
+ * Outer shell to drive a purge
+ */
+function StartPurge(params) {
+    var purgeData = {toProcess: [], processed: [], action: "purge"};
+    var purgeTypes = [{type: "passwords", defaultEnabled: "true", suffix: "-passwords", fn: ProcessSinglePurge}];
+    for (var i = 0; i < purgeTypes.length; i++) {
+        if (!params.dataType || params.dataType == purgeTypes[i].type) {
+            purgeData.toProcess.push(purgeTypes[i]);
+        }
+    }
+    Xmarks.Settings.SetSyncInfo(purgeData);
+    UpdateSyncUI();
+
+    // Ensure user is authenticated before doing anything
+    var request = new Request("POST", {"host": Xmarks.Settings.Get("syncserver"), "path": "/sync/bookmarks/status"}, Xmarks.GetRequestArgs());
+    request.Start(EnsureAuthCallback);
+
+    function EnsureAuthCallback(response) {
+        if (!ResponseOK(response)) {
+            // User canceled, don't do anything
+            Xmarks.LogWrite("User canceled status call, not purging");
+            ResetSyncAction();
+        } else {
+            ProcessSyncType();
+        }
+    }
+}
+
+/*
+ * Main entry point for sync related actions.
+ */
+function HandleAction(action, params) {
+    if (!SetNewAction(action)) {
+        return;
+    }
+
+    if (!params) {
+        params = {};
+    }
+
+    DestroyLocalChangeHandlers();
+
+    if (params.callback) {
+        Xmarks.Settings.SetPostSyncCallback(params.callback);
+    }
+
+    if (action == "download") {
+        StartDownload(params);
+    } else if (action == "sync") {
+        StartSync(params);
+    } else if (action == "upload") {
+        StartUpload(params);
+    } else if (action == "merge") {
+        StartMerge(params);
+    } else if (action == "purge") {
+        StartPurge(params);
+    } else if (action == "repair") {
+        StartRepair(params);
+    }
+}
+
+/*
+ * ToggleUserAuthentication is the main entry point for user authentication.  You can force a specific
+ * action by using UnauthenticateUser or AuthenticateUser.
+ */
+function ToggleUserAuthentication(callback) {
+    var userData = Xmarks.Settings.GetUserSettings();
+    if (userData["username"]) {
+        UnauthenticateUser(callback);
+    } else {
+        AuthenticateUser(callback);
+    }
+}
+
+function UnauthenticateUser(callback) {
+    if (!SetNewAction("authentication")) {
+        return;
+    }
+
+    Xmarks.Settings.SetUserSettings({"remember": true});
+    UpdateTabListener();
+    ResetSyncAction();
+    callback();
+}
+
+function AuthenticateUser(callback, forceRequest) {
+    if (!SetNewAction("authentication")) {
+        return;
+    }
+
+    Xmarks.GetUserCredentials(AuthWindowCallback, forceRequest);
+
+    function AuthWindowCallback(authData) {
+        if (!authData["username"]) {
+            Xmarks.LogWrite("User canceled auth dialog; canceling authentication");
+            UpdateTabListener();
+            ResetSyncAction();
+            callback();
+            return;
+        }
+
+        var plaintext = Base64.decode(authData["password"]);
+        var request = new Request("POST", {"host": Xmarks.Settings.Get("authserver"), "path": "/login/signtoken"},
+                                  //Xmarks.GetRequestArgs({"username": authData["username"], "password": authData["password"]}), true);
+                                  Xmarks.GetRequestArgs({"username": authData["username"], "passwordhash": hex_md5(plaintext)}), true);
+        request.Start(FinishAuthCallback);
+
+        function FinishAuthCallback(response) {
+            if (!ResponseOK(response)) {
+                Xmarks.LogWrite("Authentication error: " + response.message);
+                Xmarks.ShowDialog(chrome.i18n.getMessage("bg_invalid_auth"));
+            } else {
+                authData["authtoken"] = response.auth;
+                Xmarks.Settings.SetUserSettings(authData);
+                Xmarks.LogWrite("Authenticated as: " + Xmarks.Settings.Get("current-username"));
+            }
+
+            UpdateTabListener();
+            ResetSyncAction();
+            callback();
+        }
+    }
+}
+
+/*
+ * Run the setup wizard, handle resulting action
+ */
+function StartSetupWizard() {
+    var height = 530;
+    var width = 650;
+    var centerHeight = Math.floor((window.screen.height - height) / 2);
+    var centerWidth = Math.floor((window.screen.width - width) / 2);
+    chrome.i18n.getAcceptLanguages(ShowWizardWindow);
+
+    function ShowWizardWindow(langs) {
+        var langString = langs.join(",");
+        var params = "_lang=" + langString + "&_app=sheba&_mid=" + Xmarks.Settings.GetMachineId() + "&_version=" + Xmarks.Settings.Get("version");
+        window.open("https://" + Xmarks.Settings.Get("authserver") + "/wizard?" + params, "xmarksSetupWizard", "height=400,width=600,left=" + centerWidth + ",top=" + centerHeight + "toolbar=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,location=no");
+        //chrome.windows.create({"url":"http://" + Xmarks.Settings.Get("authserver") + "/wizard?" + params, "left": centerWidth, "top": centerHeight, "width": width, "height": height});
+    }
+}
+
+/*
+ * Handle messages from our content scripts (setupwizardinsert.js, passwordinsert.js, etc).
+ */
+function ExtensionListener(request, sender, sendResponse) {
+    if (!request || !request["requestType"]) {
+        Xmarks.LogWrite("Got poorly formed message from content script, ignoring: " + JSON.stringify(request));
+        return;
+    }
+    if (request["requestType"] == "log") {
+        Xmarks.LogWrite("Content script log: " + request["message"]);
+        return;
+    }
+    Xmarks.LogWrite("Got message from content script: " + request["requestType"]);
+
+    if (request["requestType"] == "setupWizard") {
+        // setupwizardinsert.js
+        chrome.windows.remove(sender.tab.windowId);
+
+        if (!request["username"]) {
+            Xmarks.ShowDialog(chrome.i18n.getMessage("bg_wizard_canceled"));
+            return;
+        }
+        
+        function WizardDoSyncCallback(bWindow, syncData) {
+            bWindow.close();
+
+            var persist = request["remember"];
+            Xmarks.Settings.Set("current-username", request["username"], persist);
+            var userHash = Xmarks.Settings.GetUserHash();
+            Xmarks.Settings.Set(userHash + "username", request["username"], persist);
+            Xmarks.Settings.Set(userHash + "password", request["password"], persist);
+            Xmarks.LogWrite("Logged in as: " + Xmarks.Settings.Get("current-username"));
+            
+            if (syncData["synctype"] == "upload" || syncData["synctype"] == "download") {
+                HandleAction(syncData["synctype"], {dataType: "bookmarks"});
+            } else if (syncData["synctype"] == "merge-local") {
+                HandleAction("merge", {type: "local", dataType: "bookmarks"});
+            } else if (syncData["synctype"] == "merge-server") {
+                HandleAction("merge", {type: "server", dataType: "bookmarks"});
+            }
+        }
+
+        Xmarks.Settings.SetWindowParams({"callback": WizardDoSyncCallback, "have_account": request["have_account"]});
+        Xmarks.ShowWindow("firsttimesync.html", "xmarksFirstTimeSync", 200, 590);
+    }
+}
+
+/*
+ * Opens an internal Xmarks extension URL
+ */
+function OpenExtensionUrl(url, paramString) {
+    var baseUrl = chrome.extension.getURL(url);
+    var windowUrl = baseUrl;
+    if (paramString) {
+        windowUrl += "?" + paramString;
+    }
+
+    chrome.windows.getCurrent(HaveCurrentWindow);
+
+    function HaveCurrentWindow(curWindow) {
+        chrome.tabs.getAllInWindow(curWindow.id, CheckTabsForSettingsDialog);
+    }
+
+    function CheckTabsForSettingsDialog(allTabs) {
+        var found = false;
+        for (var i = 0; i < allTabs.length; i++) {
+            var aTab = allTabs[i];
+            if (aTab.url.indexOf(baseUrl) == 0) {
+                // Window is already open, bring it to fore front and refresh URL
+                chrome.tabs.update(aTab.id, {"url": windowUrl, "selected": true});
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            chrome.tabs.create({"url": windowUrl, "selected": true});
+        }
+    }
+}
+
+/*
+ * Opens a success or upgrade page
+ */
+function ShowSuccessPage(type, loadBg) {
+    var pageUrl = "http://" + Xmarks.Settings.Get("webserver") + "/chrome/" + type + "/" + Xmarks.Settings.Get("version");
+    chrome.tabs.create({"url": pageUrl, "selected": loadBg ? true : false});
+}
+
+/*
+ * Open a list of tabs in a new window.
+ */
+function OpenUrlsFromTabList(tabList) {
+    var windowId = null;
+    var aTab = tabList.shift();
+    if (aTab) {
+        chrome.windows.create({'url': aTab.url}, CreateNewTab);
+    }
+    
+    function CreateNewTab(aWin) {
+        while (tabList.length > 0) {
+            var newTab = tabList.shift();
+            if (newTab) {
+                chrome.tabs.create({'url': newTab.url, 'windowId': aWin.id, 'selected': false});
+            }
+        }
+    }
+}
+
+/*
+ * Displays the UI for changing sync profile.
+ */
+function ShowChangeSyncProfilesWindow() {
+    // Manually remove the auth token which will force the user authentication to make a trip to our servers
+    var userData = Xmarks.Settings.GetUserSettings();
+    if (userData["username"]) {
+        var userHash = Xmarks.Settings.GetUserHash();
+        Xmarks.Settings.Remove(userHash + "authtoken");
+    }
+
+    AuthenticateUser(AuthWindowCallback, true);
+    
+    function AuthWindowCallback() {
+        var userData = Xmarks.Settings.GetUserSettings();
+        if (!userData["authtoken"]) {
+            // Auth was canceled, no sync profiles display
+            return;
+        }
+
+        // Get list of profiles, show in syncprofiles.html
+        var request = new Request("POST", {"protocol": "https", "host": Xmarks.Settings.Get("authserver"), "path": "/user/profiles/getnames"}, Xmarks.GetRequestArgs());
+        request.Start(ProfileNamesCallback);
+        
+        function ProfileNamesCallback(response) {
+            Xmarks.LogWrite("Handling get profile names callback");
+            if (!ResponseOK(response) || !response.profiles) {
+                ResetSyncAction();
+                Xmarks.ShowDialog(chrome.i18n.getMessage("bg_no_profiles_list"));
+            }
+
+            var wParams = response.profiles;
+            wParams["callback"] = ChangeSyncProfile;
+            Xmarks.Settings.SetWindowParams(response.profiles);
+            Xmarks.ShowWindow("syncprofile.html", "xmarksSyncProfile", 100, 400);
+        }
+    }
+}
+
+/*
+ * A user wants to change their sync profile:
+ *  - Sync their old data one last time
+ *  - Change their sync profile
+ *  - Download their new profile of bookmarks
+ */
+function ChangeSyncProfile(newProfileId, newProfileName) {
+    Xmarks.ShowDialog(chrome.i18n.getMessage("bg_profile_changed"), null, ChangeCallback);
+    
+    function ChangeCallback() {
+        var userHash = Xmarks.Settings.GetUserHash();
+        var lastSyncTime = Xmarks.Settings.Get(userHash + "lastsync");
+
+        Xmarks.Settings.SetPostSyncCallback(SyncFinishedCallback);
+        Xmarks.Settings.Set("auto-sync", true);
+        HandleAction("sync");
+
+        function SyncFinishedCallback() {
+            Xmarks.Settings.SetPostSyncCallback(null);
+            var newLastSyncTime = Xmarks.Settings.Get(userHash + "lastsync");
+            if (newLastSyncTime <= lastSyncTime) {
+                Xmarks.ShowDialog(chrome.i18n.getMessage("bg_profile_sync_error"));
+                return;
+            }
+
+            //Save the former profile in case download fails
+            Xmarks.Settings.Set(userHash + "profilenameORIG", Xmarks.Settings.Get(userHash + "profilename", 0), false); 
+            Xmarks.Settings.Set(userHash + "profileidORIG", Xmarks.Settings.Get(userHash + "profileid", 0), false); 
+
+
+            Xmarks.Settings.Set(userHash + "profilename", newProfileName, true);
+            Xmarks.Settings.Set(userHash + "profileid", newProfileId, true);
+            Xmarks.Settings.SetPostSyncCallback(SyncFinishedCallback);
+            Xmarks.Settings.Set("auto-sync", true);
+            HandleAction("download");
+            
+            function SyncFinishedCallback() {
+                Xmarks.Settings.SetPostSyncCallback(null);
+                var newestLastSyncTime = Xmarks.Settings.Get(userHash + "lastsync");
+                if (newestLastSyncTime <= newLastSyncTime) {
+                    //Revert!
+                    Xmarks.Settings.Set(userHash + "profilename", Xmarks.Settings.Get(userHash + "profilenameORIG", 0), true);
+                    Xmarks.Settings.Set(userHash + "profileid", Xmarks.Settings.Get(userHash + "profileidORIG", 0), true);
+                    Xmarks.ShowDialog(chrome.i18n.getMessage("bg_profile_download_error"));
+                } else {
+                    if (newProfileName == "" || newProfileName == "<none>") {
+                        Xmarks.ShowDialog(chrome.i18n.getMessage("bg_no_profile"));
+                    } else {
+                        Xmarks.ShowDialog(chrome.i18n.getMessage("bg_change_profile", [newProfileName]));
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * List for local bookmark changes.
+ */
+function CreateLocalChangeHandlers() {
+    chrome.bookmarks.onCreated.addListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onRemoved.addListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onChanged.addListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onMoved.addListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onChildrenReordered.addListener(LocalBookmarkChangeHandler);
+}
+
+/*
+ * Stop listening for local bookmark changes.
+ */
+function DestroyLocalChangeHandlers() {
+    chrome.bookmarks.onCreated.removeListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onRemoved.removeListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onChanged.removeListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onMoved.removeListener(LocalBookmarkChangeHandler);
+    chrome.bookmarks.onChildrenReordered.removeListener(LocalBookmarkChangeHandler);
+}
+
+/*
+ * Fired when a user's local bookmarks are changed.
+ */
+function LocalBookmarkChangeHandler(id, info) {
+    var d = new Date();
+    var curTime = d.getTime();
+    var lastSync = Xmarks.Settings.GetInt(Xmarks.Settings.GetUserHash() + "lastsync", 0);
+    
+    if (Xmarks.Settings.GetBool("sync-type-bookmarks", "true") && (!lastSync || curTime > lastSync + 3000)) {
+        Xmarks.Settings.Set("last-change", curTime);
+        UpdateSyncUI();
+    }
+}
+
+/*
+ * Determine if we should enable password sync event listeners.
+ */
+function UpdateTabListener() {
+}
+
+/*
+ * Startup work
+ */
+if (typeof(chrome.runtime) != 'undefined') {
+  chrome.runtime.onMessage.addListener(ExtensionListener);
+} else {
+  chrome.extension.onRequest.addListener(ExtensionListener);
+}
+UpdateTabListener();
+
+window.onerror = function(e) {
+    // if we get any unhandled javascript exception, clear the sync
+    // action so user can try repair.
+    Xmarks.LogWrite(e);
+    Xmarks.Settings.Remove("current-action");
+};
+
+// Hack: Chrome bug #28136 means we can't set event handlers until we query the bookmark
+// API first.  Make a dummy call before triggering handlers.
+chrome.bookmarks.get("0", CreateLocalChangeHandlers);
+setTimeout(HandleHeartbeat, 1000 * 120);

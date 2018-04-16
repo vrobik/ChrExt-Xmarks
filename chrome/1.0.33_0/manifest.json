@@ -1,0 +1,32 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "browser_action": {
+      "default_icon": "images/xmarks-browseraction.png",
+      "default_popup": "browseraction.html",
+      "default_title": "__MSG_browser_action_tooltip_default__"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "Base64.js", "setupwizardinsert.js" ],
+      "matches": [ "http://*.xmarks.com/wizard*", "https://*.xmarks.com/wizard*", "http://*.foxmarks.com/wizard*", "https://*.foxmarks.com/wizard*" ]
+   } ],
+   "content_security_policy": "default-src 'self' https://*.xmarks.com https://*.foxmarks.com https://lastpass.com ; img-src 'self' http: https: data:; connect-src http://*.xmarks.com http://*.foxmarks.com https://*.xmarks.com https://*.foxmarks.com https://lastpass.com; style-src 'self' 'unsafe-inline' http://*.xmarks.com http://*.foxmarks.com https://*.xmarks.com https://*.foxmarks.com",
+   "default_locale": "en",
+   "description": "__MSG_extension_description__",
+   "icons": {
+      "128": "images/xmarks-128.png",
+      "16": "images/xmarks-16.png",
+      "32": "images/xmarks-32.png",
+      "48": "images/xmarks-48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDCFa77+SQGtyRj3gGnPxHD1GUd6fZT2rGhcsgsAt+nZkpZvBeyScCoG9hRB2PxkdF9qBz399910dBiiQUdcOtjoslzo9Uzk9RECWtgi4PR/z9ADBXY/vpw6hcs5SoGM4x6eTo9HgOj8Wlm4Xm4LaJiDNlQCMySt0HwGJ2MGyf7FwIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "18.0",
+   "name": "__MSG_extension_name__",
+   "options_page": "settings.html",
+   "permissions": [ "bookmarks", "tabs", "unlimited_storage", "http://*.xmarks.com/", "https://*.xmarks.com/", "http://*.foxmarks.com/", "https://*.foxmarks.com/", "http://*/*", "https://*/*" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.33"
+}

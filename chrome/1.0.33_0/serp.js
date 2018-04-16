@@ -1,0 +1,1 @@
+var headTags=document.getElementsByTagName("head");if(headTags&&1==headTags.length){var serpScript=document.createElement("script");serpScript.setAttribute("src","https://static.xmarks.com/SERP/xmarksserp.js");headTags[0].appendChild(serpScript)};

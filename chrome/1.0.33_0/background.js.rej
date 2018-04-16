@@ -1,0 +1,222 @@
+***************
+*** 584,795 ****
+  }
+  
+  /*
+-  * Handles page turns for password sync.  If password sync is enabled and the URL matches something
+-  * in our password database, insert password sync content script.
+-  */
+- function TabUpdateListener(tabId, changeInfo, tab) {
+-     if (changeInfo.status != "loading" || tab.url.indexOf("http") != 0 || !Xmarks.Settings.GetBool("sync-type-passwords", "false")) {
+-         return;
+-     }
+-     
+-     // Page is complete and password sync is on, insert content script
+-     chrome.tabs.executeScript(tabId, {'file': 'passwordinsert.js', 'allFrames': true}, ContentScriptInserted);
+-     
+-     function ContentScriptInserted() {
+-         if (!Xmarks.Settings.Get(Xmarks.Settings.GetUserHash() + "password-pin")) {
+-             // No pin saved, we need it before we can do anything
+-             Xmarks.VerifyUserPin(ContinueInsert, PasswordStore.DoesPinUnlockLocalData)
+-         } else {
+-             ContinueInsert({hasPin: true});
+-         }
+- 
+-         function ContinueInsert(pinData) {
+-             if (!pinData.hasPin) {
+-                 Xmarks.LogWrite("No valid PIN data, cannot insert password manager");
+-                 return;
+-             }
+- 
+-             if (pinData.encodedPin) {
+-                 Xmarks.Settings.Set(Xmarks.Settings.GetUserHash() + "password-pin", pinData.encodedPin, pinData.persist);
+-             }
+- 
+-             var matchData = PasswordStore.CheckForMatch(tab.url);
+-             if (matchData.length) {
+-                 // We have some matches, insert content script and pass matches in
+-                 Xmarks.LogWrite("Potential passwords found for [" + tab.url + "], sending to content script");
+-                 if (typeof(chrome.runtime) != 'undefined') {
+-                   chrome.tabs.sendMessage(tabId, {'message': 'passwords', 'data': {'matches': matchData, 'showUi': Xmarks.Settings.GetBool("show-autofill-ui", "true")}});
+-                 } else {
+-                   chrome.tabs.sendRequest(tabId, {'message': 'passwords', 'data': {'matches': matchData, 'showUi': Xmarks.Settings.GetBool("show-autofill-ui", "true")}});
+-                 }
+-             }
+- 
+-             // Check to see if we should prompt to save password data
+-             var promptData = Xmarks.Settings.Get("passwordPromptData-" + tab.windowId + "-" + tab.id, null)
+-             if (promptData) {
+-                 var now = new Date().getTime();
+-                 var promptDataObj = JSON.parse(promptData);
+-                 if (now < (promptDataObj.timestamp + 10000)) {
+-                     Xmarks.LogWrite("Found password prompt data and still in timestamp window, sending to tab");
+-                     if (typeof(chrome.runtime) != 'undefined') {
+-                       chrome.tabs.sendMessage(tabId, {'message': 'promptSave', 'data': promptDataObj});
+-                     } else {
+-                       chrome.tabs.sendRequest(tabId, {'message': 'promptSave', 'data': promptDataObj});
+-                     }
+-                 } else {
+-                     Xmarks.LogWrite("Password prompt data has expired, removing");
+-                     Xmarks.Settings.Remove("passwordPromptData-" + tab.windowId + "-" + tab.id);
+-                 }
+-             }
+-         }
+-     }
+- }
+- 
+- /*
+   * Determine if we should enable password sync event listeners.
+   */
+  function UpdateTabListener() {
+-     if (Xmarks.Settings.GetBool("sync-type-passwords", "false") && Xmarks.Settings.Get("current-username")) {
+-         Xmarks.LogWrite("Password sync is enabled, adding TabUpdate listener");
+-         chrome.tabs.onUpdated.addListener(TabUpdateListener);
+-     } else if (chrome.tabs.onUpdated.hasListener(TabUpdateListener)) {
+-         chrome.tabs.onUpdated.removeListener(TabUpdateListener);
+-     }
+- }
+- 
+- /*
+-  * Gets the current password state
+-  */
+- function GetPasswordState(stateCallback) {
+-     var request = new Request("POST", {"host": Xmarks.Settings.Get("syncserver"), "path": "/sync/passwords/state"}, Xmarks.GetRequestArgs({'depth': 'self'}));
+-     request.Start(StateResponse);
+- 
+-     function StateResponse(response) {
+-         Xmarks.LogWrite("Handling password state callback");
+-         if (!ResponseOK(response)) {
+-             var errorResponse = "";
+-             if (response == 2) {
+-                 Xmarks.LogWrite("Password state call canceled, no password sync");
+-                 errorResponse = "User authentication canceled.";
+-             } else if (typeof response == "object" && response["status"] == 401) {
+-                 Xmarks.LogWrite("Authentication for password state invalid, no password sync");
+-                 errorResponse = "Invalid user authentication.";
+-             } else if (typeof response == "object" && response["status"] == 404) {
+-                 // Valid response, user has no password data
+-                 Xmarks.LogWrite("Got 404 response, user has never had password sync");
+-                 stateCallback({});
+-                 return;
+-             } else {
+-                 Xmarks.LogWrite("Unknown response, no password sync");
+-                 errorResponse = "Error during user authentication.";
+-             }
+-             stateCallback({error: errorResponse});
+-             return;
+-         }
+- 
+-         stateCallback(response);
+-     }
+- }
+- 
+- /*
+-  * Enables password sync
+-  */
+- function TurnOnPasswordSync(pin, persist) {
+-     if (!Xmarks.Settings.Get("current-username")) {
+-         Xmarks.LogWrite("Not currently signed in, cannot enable password sync!");
+-         return;
+-     }
+- 
+-     // Attempt to salvage any local password data
+-     if (Xmarks.Settings.Get(Xmarks.Settings.GetUserHash() + "password-pin")) {
+-         PasswordStore.DecodeAll();
+-         Xmarks.Settings.Remove(Xmarks.Settings.GetUserHash() + "password-pin"); // Ensure persisted data is removed
+-     }
+- 
+-     Xmarks.Settings.Set(Xmarks.Settings.GetUserHash() + "password-pin", Base64.encode(pin), persist);
+- 
+-     // Reencode any passwords we have with new PIN
+-     PasswordStore.EncodeAll();
+- 
+-     Xmarks.Settings.Set("sync-type-passwords", true, true);
+-     Xmarks.Settings.Set("securityLevel", 1, true);
+-     UpdateTabListener();
+- }
+- 
+- /*
+-  * Disables password sync
+-  */
+- function TurnOffPasswordSync() {
+-     Xmarks.Settings.Set("sync-type-passwords", false, true);
+-     UpdateTabListener();
+-     UpdateSyncUI();
+- }
+- 
+- /*
+-  * Remove all local password sync data
+-  */
+- function ClearLocalPasswordData(callback) {
+-     if (!Xmarks.Settings.Get("current-username")) {
+-         Xmarks.LogWrite("Not currently signed in, cannot clear local password data!");
+-         return;
+-     }
+- 
+-     Xmarks.Settings.Remove(Xmarks.Settings.GetUserHash() + "password-pin");
+-     Xmarks.Settings.Remove(Xmarks.Settings.GetUserHash() + "rev-passwords");
+-     PasswordStore.DeleteLocalExceptions();
+-     PasswordStore.ClearLocalStore(FinishClear);
+- 
+-     function FinishClear() {
+-         TurnOffPasswordSync();
+-         callback();
+-     }
+- }
+- 
+- /*
+-  * Removes a nid from the password store and updates the UI to show a change is ready
+-  */
+- function RemovePasswordNid(nid) {
+-     if (PasswordStore.RemoveNode(nid)) {
+-         var d = new Date();
+-         Xmarks.Settings.Set("last-change", d.getTime());
+-         UpdateSyncUI();
+-         return true;
+-     }
+- 
+-     return false;
+- }
+- 
+- /*
+-  * Removes an exception from the password store and updates the UI to refresh any viewers
+-  */
+- function RemovePasswordException(domain) {
+-     if (PasswordStore.RemoveException(domain)) {
+-         UpdateSyncUI();
+-         return true;
+-     }
+- 
+-     return false;
+- }
+- 
+- /*
+-  * Startup work
+-  */
+- var PasswordStore = new PasswordDatasource(); // Hack: we need to get DB calls started so datasource is fully loaded when someone needs to use it :(
+- if (typeof(chrome.runtime) != 'undefined') {
+-   chrome.runtime.onMessage.addListener(ExtensionListener);
+- } else {
+-   chrome.extension.onRequest.addListener(ExtensionListener);
+  }
+- UpdateTabListener();
+- 
+- window.onerror = function(e) {
+-     // if we get any unhandled javascript exception, clear the sync
+-     // action so user can try repair.
+-     Xmarks.LogWrite(e);
+-     Xmarks.Settings.Remove("current-action");
+- };
+- 
+- // Hack: Chrome bug #28136 means we can't set event handlers until we query the bookmark
+- // API first.  Make a dummy call before triggering handlers.
+- chrome.bookmarks.get("0", CreateLocalChangeHandlers);
+- setTimeout(HandleHeartbeat, 1000 * 120);
+--- 491,497 ----
+  }
+  
+  /*
+   * Determine if we should enable password sync event listeners.
+   */
+  function UpdateTabListener() {
+  }

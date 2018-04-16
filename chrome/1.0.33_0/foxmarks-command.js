@@ -1,0 +1,2 @@
+function Command(a,b,c){this.action=a;this.nid=b;this.args=c}Command.prototype={};function Commandset(a){this.set=a||[]}
+Commandset.prototype={append:function(a){this.set.push(a)},drop:function(a){if("number"==typeof a)this.set.splice(a,1);else throw Error("drop only supports command index argument");},stats:function(){var a={},b;for(b in this.set){var c=this.set[b].action;a[c]=a[c]?a[c]+1:1}return a},toJSONString:function(){return JSON.stringify(this.set)},execute:function(a){for(var b=0;b<this.set.length;++b)a.Execute(this.set[b])},get length(){return this.set.length}};

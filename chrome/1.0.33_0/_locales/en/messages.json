@@ -1,0 +1,589 @@
+{
+   "authdialog_password": {
+      "message": "Password"
+   },
+   "authdialog_remember": {
+      "message": "Remember login information"
+   },
+   "authdialog_title": {
+      "message": "Xmarks Authentication"
+   },
+   "authdialog_username": {
+      "message": "Username"
+   },
+   "bg_action_complete": {
+      "message": "$action$ complete",
+      "placeholders": {
+         "action": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_baseline_download_error": {
+      "message": "Error processing baseline download"
+   },
+   "bg_baseline_error": {
+      "message": "Error with baseline response"
+   },
+   "bg_change_profile": {
+      "message": "Sync complete, your profile has been changed to $newProfileName$.",
+      "placeholders": {
+         "newProfileName": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_changes_to_sync": {
+      "message": "Changes to sync"
+   },
+   "bg_compare_error": {
+      "message": "Error during compare"
+   },
+   "bg_currently_busy": {
+      "message": "Xmarks is already processing an action ($currentAction$), no changes can be made until it is finished!",
+      "placeholders": {
+         "currentAction": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_currently_syncing": {
+      "message": "Xmarks is currently synchronizing, no changes can be made until it is finished."
+   },
+   "bg_download_canceled": {
+      "message": "Download canceled"
+   },
+   "bg_download_error": {
+      "message": "Error processing download"
+   },
+   "bg_error_build_mcs": {
+      "message": "Error building merge's mcs"
+   },
+   "bg_error_download_response": {
+      "message": "Error with download response"
+   },
+   "bg_error_local_loaded": {
+      "message": "Error during sync's LocalLoaded"
+   },
+   "bg_error_processing_download": {
+      "message": "Error processing download"
+   },
+   "bg_general_error": {
+      "message": "An error occurred"
+   },
+   "bg_invalid_auth": {
+      "message": "Invalid username or password, not signed in"
+   },
+   "bg_invalid_download": {
+      "message": "Invalid username or password, download canceled"
+   },
+   "bg_invalid_sync": {
+      "message": "Invalid username or password, sync canceled. Please relogin."
+   },
+   "bg_invalid_sync_response": {
+      "message": "Invalid sync response"
+   },
+   "bg_invalid_upload": {
+      "message": "Invalid username or password, upload canceled"
+   },
+   "bg_merge_putchanges": {
+      "message": "Error in merge putchanges"
+   },
+   "bg_no_profile": {
+      "message": "Sync complete, this machine is no longer using a sync profile."
+   },
+   "bg_no_profiles_list": {
+      "message": "Unable to get list of sync profiles"
+   },
+   "bg_no_server_data": {
+      "message": "You have no $syncType$ saved on our servers.  You must do an upload from this browser before you can begin synchronizing.  Would you like to upload your $syncType$ now?",
+      "placeholders": {
+         "syncType": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_no_user_data": {
+      "message": "No data on server for user, download canceled"
+   },
+   "bg_not_continuous": {
+      "message": "You restored or uploaded $syncType$ from another computer to our servers. You can sync normally (the safest choice), or you can download the server $syncType$, overwriting your local $syncType$. Which do you prefer?",
+      "placeholders": {
+         "syncType": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_possible_error": {
+      "message": "This can also be caused by a sync error, $openLink$learn about$endLink$ common errors.",
+      "placeholders": {
+         "endLink": {
+            "content": "$2"
+         },
+         "openLink": {
+            "content": "$1"
+         }
+      }
+   },
+   "bg_profile_changed": {
+      "message": "Your profile has been changed! Xmarks is now going to sync with the server to add and remove the appropriate bookmarks for this profile."
+   },
+   "bg_profile_download_error": {
+      "message": "Error during download, profile change not completed!"
+   },
+   "bg_profile_sync_error": {
+      "message": "Error during sync, profile not changed!"
+   },
+   "bg_sync_canceled": {
+      "message": "Synchronization canceled"
+   },
+   "bg_sync_changes_error": {
+      "message": "Error during sync changes"
+   },
+   "bg_sync_error": {
+      "message": "Sync Error"
+   },
+   "bg_sync_in_progress": {
+      "message": "Sync in progress"
+   },
+   "bg_sync_response": {
+      "message": "Error with sync response"
+   },
+   "bg_sync_stat": {
+      "message": "Error with sync status response"
+   },
+   "bg_syncing_successfully": {
+      "message": "Synchronizing successfully"
+   },
+   "bg_unknown_sync_error": {
+      "message": "Unknown error during sync"
+   },
+   "bg_upload_canceled": {
+      "message": "Upload canceled"
+   },
+   "bg_upload_commands_error": {
+      "message": "Error providing commands for upload"
+   },
+   "bg_upload_error": {
+      "message": "Error sending commands to upload"
+   },
+   "bg_upload_profile_error": {
+      "message": "Error while sending upload with profile"
+   },
+   "bg_wizard_canceled": {
+      "message": "Setup Wizard canceled"
+   },
+   "browser_action_tooltip_default": {
+      "message": "Xmarks Bookmarks Synchronizer"
+   },
+   "browseraction_browser_name_chrome": {
+      "message": "Google Chrome"
+   },
+   "browseraction_browser_name_firefox": {
+      "message": "Firefox"
+   },
+   "browseraction_browser_name_ie": {
+      "message": "Internet Explorer"
+   },
+   "browseraction_browser_name_safari": {
+      "message": "Safari"
+   },
+   "browseraction_lastpass_wizard": {
+      "message": "LastPass Import Wizard"
+   },
+   "browseraction_my_xmarks": {
+      "message": "My Xmarks"
+   },
+   "browseraction_remote_tabs": {
+      "message": "Open Remote Tabs"
+   },
+   "browseraction_remote_tabs_error": {
+      "message": "Error while loading remote tabs: $error$.",
+      "placeholders": {
+         "error": {
+            "content": "$1"
+         }
+      }
+   },
+   "browseraction_remote_tabs_nodata": {
+      "message": "No remote tabs found.  To use this feature, enable Xmarks Tab Sync in other browsers and computers."
+   },
+   "browseraction_settings": {
+      "message": "Xmarks Settings"
+   },
+   "dialog_cancel": {
+      "message": "Cancel"
+   },
+   "dialog_change": {
+      "message": "Change Sync Settings"
+   },
+   "dialog_close": {
+      "message": "Close"
+   },
+   "dialog_download": {
+      "message": "Download"
+   },
+   "dialog_error_download": {
+      "message": "Xmarks has detected an error while synchronizing your bookmarks. Downloading the current snapshot from the server usually fixes this, but will cause you to lose any local changes that have not been synchronized. Would you like to perform a download?\u003Cbr/>\u003Cbr/>\u003Cb>WARNING: If you are using Chrome Sync for bookmarks, it is possible that running both sync services on the same data is responsible for duplicates and Xmarks sync errors.\u003Cbr/>\u003Cbr/>\u003Ca href='http://helpdesk.xmarks.com/troubleshooting/disable-chrome-bookmark-sync/' target='_blank'>Learn how to turn off Chrome Bookmark Sync.\u003C/a>\u003C/b> "
+   },
+   "dialog_login": {
+      "message": "Log in"
+   },
+   "dialog_merge": {
+      "message": "Merge"
+   },
+   "dialog_my": {
+      "message": "Visit My.Xmarks.com"
+   },
+   "dialog_next": {
+      "message": "Next"
+   },
+   "dialog_ok": {
+      "message": "Ok"
+   },
+   "dialog_sign_in": {
+      "message": "Sign in"
+   },
+   "dialog_sync": {
+      "message": "Sync"
+   },
+   "dialog_sync_now": {
+      "message": "Synchronize Now"
+   },
+   "dialog_title": {
+      "message": "Xmarks Alert"
+   },
+   "dialog_upload": {
+      "message": "Upload"
+   },
+   "extension_description": {
+      "message": "Backup and sync your bookmarks and open tabs across computers and browsers. Xmarks is also available for Firefox, Safari and IE."
+   },
+   "extension_name": {
+      "message": "Xmarks Bookmark Sync"
+   },
+   "firsttimesync_download": {
+      "message": "Keep bookmarks on the server; discard those on this computer."
+   },
+   "firsttimesync_download_description": {
+      "message": "Xmarks will download your bookmarks from the server."
+   },
+   "firsttimesync_download_warning": {
+      "message": "Note: This will ERASE bookmarks currently on this computer."
+   },
+   "firsttimesync_merge_local": {
+      "message": "Merge bookmarks with server, starting with this computer."
+   },
+   "firsttimesync_merge_local_description": {
+      "message": "Xmarks will now merge your bookmarks, starting with your local bookmarks."
+   },
+   "firsttimesync_merge_server": {
+      "message": "Merge bookmarks with server, starting with the server."
+   },
+   "firsttimesync_merge_server_description": {
+      "message": "Xmarks will now merge your bookmarks, starting with your server bookmarks."
+   },
+   "firsttimesync_perform": {
+      "message": "How do you want Xmarks to perform initial synchronization?"
+   },
+   "firsttimesync_ready": {
+      "message": "You are now ready to synchronize your bookmarks."
+   },
+   "firsttimesync_title": {
+      "message": "Ready to Sync"
+   },
+   "firsttimesync_upload": {
+      "message": "Discard bookmarks on the server; keep bookmarks on this computer."
+   },
+   "firsttimesync_upload_description": {
+      "message": "Xmarks will upload your bookmarks to the server."
+   },
+   "firsttimesync_upload_warning": {
+      "message": "Note: This will ERASE bookmarks currently on the server."
+   },
+   "pindialog_details": {
+      "message": "To sync your saved passwords with this computer, please enter your PIN."
+   },
+   "pindialog_error": {
+      "message": "Invalid PIN, please enter again"
+   },
+   "pindialog_pin": {
+      "message": "PIN"
+   },
+   "pindialog_remember": {
+      "message": "Remember this PIN between sessions."
+   },
+   "pindialog_title": {
+      "message": "Secure Password Sync: PIN Required"
+   },
+   "settings_account": {
+      "message": "Account"
+   },
+   "settings_advanced_title": {
+      "message": "Advanced"
+   },
+   "settings_april": {
+      "message": "April"
+   },
+   "settings_august": {
+      "message": "August"
+   },
+   "settings_auto_sync": {
+      "message": "Enable Automatic Synchronization"
+   },
+   "settings_bookmarks": {
+      "message": "Bookmarks"
+   },
+   "settings_change_profile": {
+      "message": "Change Profile"
+   },
+   "settings_computer_name": {
+      "message": "Name for this computer:"
+   },
+   "settings_connection_security": {
+      "message": "Connection Security"
+   },
+   "settings_create_and_manage_profiles": {
+      "message": "Create and manage sync profiles:"
+   },
+   "settings_current_profile": {
+      "message": "Current Profile"
+   },
+   "settings_current_status": {
+      "message": "Current Status"
+   },
+   "settings_december": {
+      "message": "December"
+   },
+   "settings_default_computer_name": {
+      "message": "My computer"
+   },
+   "settings_delete_passwords": {
+      "message": "Delete Passwords From Server"
+   },
+   "settings_download_bookmarks": {
+      "message": "Download Bookmarks"
+   },
+   "settings_download_passwords": {
+      "message": "Download Passwords"
+   },
+   "settings_enable_logging": {
+      "message": "Enable logging"
+   },
+   "settings_encrypt_all": {
+      "message": "Encrypt All"
+   },
+   "settings_encryption": {
+      "message": "Encryption"
+   },
+   "settings_february": {
+      "message": "February"
+   },
+   "settings_friday": {
+      "message": "Friday"
+   },
+   "settings_get_help": {
+      "message": "Get help"
+   },
+   "settings_has_not_synced": {
+      "message": "Has not synchronized"
+   },
+   "settings_january": {
+      "message": "January"
+   },
+   "settings_july": {
+      "message": "July"
+   },
+   "settings_june": {
+      "message": "June"
+   },
+   "settings_last_sync": {
+      "message": "Last sync"
+   },
+   "settings_logging": {
+      "message": "Logging"
+   },
+   "settings_logging_info": {
+      "message": "To see log output, go to chrome://extensions/ and click the link to inspect the background.html view for Xmarks. (Note: if you don't see the option to inspect anything, you'll need to click the \"Developer mode\" link in the top right first.) Our log data is printed to the console, which can be toggled using the buttons at the bottom of the inspector. Any Chrome errors will be printed in red."
+   },
+   "settings_login_only": {
+      "message": "Login Only"
+   },
+   "settings_manual_download": {
+      "message": "Manual Download"
+   },
+   "settings_manual_download_desc": {
+      "message": "Downloading your bookmarks will overwrite the data currently on this computer with the saved data you have on our servers."
+   },
+   "settings_manual_upload": {
+      "message": "Manual Upload"
+   },
+   "settings_manual_upload_desc": {
+      "message": "Uploading your bookmarks will send this browser's data to our servers.  This will replace any data you currently have saved on our servers."
+   },
+   "settings_march": {
+      "message": "March"
+   },
+   "settings_may": {
+      "message": "May"
+   },
+   "settings_monday": {
+      "message": "Monday"
+   },
+   "settings_my_xmarks": {
+      "message": "My.Xmarks.com"
+   },
+   "settings_no_encryption": {
+      "message": "No Encryption"
+   },
+   "settings_not_loaded": {
+      "message": "Xmarks for Chrome hasn't been fully loaded yet!  Please refresh this page to load the settings."
+   },
+   "settings_not_logged_in": {
+      "message": "Not logged in"
+   },
+   "settings_not_signed_in": {
+      "message": "Not signed in"
+   },
+   "settings_november": {
+      "message": "November"
+   },
+   "settings_october": {
+      "message": "October"
+   },
+   "settings_password_manager": {
+      "message": "Password Manager"
+   },
+   "settings_passwords": {
+      "message": "Passwords"
+   },
+   "settings_preview_bookmarks": {
+      "message": "Preview Bookmarks"
+   },
+   "settings_previous_sets": {
+      "message": "Previous Bookmark Sets"
+   },
+   "settings_profiles_description": {
+      "message": "Use sync profiles to keep sensitive bookmarks where they belong.  Create and manage sync profiles at my.xmarks.com. Then choose a profile here to control what Xmarks syncs to and from this computer."
+   },
+   "settings_profiles_title": {
+      "message": "Profiles"
+   },
+   "settings_recent_changes": {
+      "message": "Recent changes"
+   },
+   "settings_report_bug": {
+      "message": "Report bug"
+   },
+   "settings_reset_pin": {
+      "message": "Reset PIN"
+   },
+   "settings_restore_bookmarks": {
+      "message": "Restore Bookmarks"
+   },
+   "settings_restore_description": {
+      "message": "Use this feature to restore your bookmarks to an earlier version.  Choose from any of the previous bookmarks sets safely backed up in your Xmarks web account over the last six months."
+   },
+   "settings_restore_title": {
+      "message": "Restore"
+   },
+   "settings_retrieving_list": {
+      "message": "Retrieving list from server..."
+   },
+   "settings_run_wizard": {
+      "message": "Run Setup Wizard"
+   },
+   "settings_saturday": {
+      "message": "Saturday"
+   },
+   "settings_september": {
+      "message": "September"
+   },
+   "settings_sign_in": {
+      "message": "Sign in"
+   },
+   "settings_sign_out": {
+      "message": "Sign out"
+   },
+   "settings_status_title": {
+      "message": "Status"
+   },
+   "settings_sunday": {
+      "message": "Sunday"
+   },
+   "settings_sync_options": {
+      "message": "Synchronization Options"
+   },
+   "settings_sync_title": {
+      "message": "Sync"
+   },
+   "settings_sync_types": {
+      "message": "Synchronization Types"
+   },
+   "settings_syncing_as": {
+      "message": "Synchronizing as $username$",
+      "placeholders": {
+         "username": {
+            "content": "$1"
+         }
+      }
+   },
+   "settings_tabs": {
+      "message": "Open Tabs"
+   },
+   "settings_thursday": {
+      "message": "Thursday"
+   },
+   "settings_time_am": {
+      "message": "am"
+   },
+   "settings_time_pm": {
+      "message": "pm"
+   },
+   "settings_title": {
+      "message": "Xmarks Settings"
+   },
+   "settings_tuesday": {
+      "message": "Tuesday"
+   },
+   "settings_unable_to_communicuate": {
+      "message": "Unable to communicate with the server."
+   },
+   "settings_updated": {
+      "message": "Xmarks for Chrome has been updated!  Recent changes and bug fixes can be found by clicking the $startLink$Recent changes$endLink$ link. ",
+      "placeholders": {
+         "endLink": {
+            "content": "$2"
+         },
+         "startLink": {
+            "content": "$1"
+         }
+      }
+   },
+   "settings_upload_bookmarks": {
+      "message": "Upload Bookmarks"
+   },
+   "settings_upload_passwords": {
+      "message": "Upload Passwords"
+   },
+   "settings_version_string": {
+      "message": "Xmarks for Chrome, version $version$",
+      "placeholders": {
+         "version": {
+            "content": "$1"
+         }
+      }
+   },
+   "settings_wednesday": {
+      "message": "Wednesday"
+   },
+   "syncprofile_title": {
+      "message": "Change Sync Profile"
+   },
+   "syncprofiles_no_profiles": {
+      "message": "You haven't created any sync profiles yet. Would you like to go to http://my.xmarks.com and set up a profile?"
+   },
+   "syncprofiles_select": {
+      "message": "Select profile"
+   }
+}
