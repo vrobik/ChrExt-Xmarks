@@ -1,0 +1,322 @@
+<html>
+<head><title>Xmarks Settings</title>
+    <!--<link type="text/css" href="jquery/css/south-street/jquery-ui-1.8.custom.css" rel="Stylesheet"/>-->
+    <!--<script type="text/javascript" src="jquery/js/jquery-1.4.2.min.js"></script>-->
+    <!--<script type="text/javascript" src="jquery/js/jquery-ui-1.8.custom.min.js"></script>-->
+    <!--<script type="text/javascript" src="passwordmeter.js"></script>-->
+    <!--<script type="text/javascript" src="pin-management.js"></script>-->
+    <style>
+        td, table {
+        font-size: 10pt;
+        font-family: verdana, sans-serif;
+    }
+
+    body {
+        background-color: #8fa9c0;
+        font-size: 10pt;
+        font-family: verdana, sans-serif;
+        margin: 0;
+        padding-top: 60px;
+        cursor: default;
+    }
+
+    .display-box {
+        width: 450px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid black;
+        background-color: white;
+        -webkit-box-shadow: 3px 3px 3px #666;
+        box-shadow: 3px 3px 3px #666;
+    }
+
+    #upgrade-notice {
+        display: none;
+        margin-bottom: 2em;
+    }
+
+    #notready-notice {
+        display: none;
+        margin-bottom: 2em;
+    }
+
+    .category {
+        height: 60px;
+        width: 64px;
+        background-image: url(images/pane-selector-bg.png);
+        text-align: center;
+        color: white;
+        font-size: 8pt;
+    }
+
+    .category-highlight {
+        height: 60px;
+        width: 64px;
+        background-image: url(images/pane-selector-bg-hover.png);
+        text-align: center;
+        color: white;
+        font-size: 8pt;
+    }
+
+    .category-selected {
+        height: 60px;
+        width: 64px;
+        background-image: url(images/pane-selector-bg-selected.png);
+        text-align: center;
+        color: black;
+        font-size: 8pt;
+    }
+
+    .section {
+        padding: 10px;
+    }
+
+    .subsection {
+        -webkit-border-radius: 4px;
+        border: 1px solid #000;
+        padding: 10px;
+    }
+
+    .subsection-title {
+        font-size: 8pt;
+    }
+
+    #subsection-current-status {
+        font-size: 16pt;
+    }
+
+    #subsection-current-status-details {
+        font-size: 8pt;
+        font-weight: bold;
+        color: red;
+    }
+
+    #subsection-current-last-sync {
+        font-size: 8pt;
+    }
+
+    .footer {
+        padding: 10px;
+        text-align: right;
+    }
+
+    .footer a, .footer a:visited, .footer a:active {
+        color: blue;
+    }</style>
+    <!--<script type="text/javascript" src="settings.js"></script>-->
+</head>
+<body>
+<div id="upgrade-notice" class="display-box">
+    <div id="message-update" style="padding: 10px;"> Xmarks for Chrome has been updated! Recent changes and bug fixes can be found by clicking the
+        <a href="https://buy.xmarks.com/notes.php" target="_blank">Recent changes</a>
+        link.
+    </div>
+</div>
+<div id="notready-notice" class="display-box">
+    <div style="padding: 10px;">
+        <span id="message-not-loaded">Xmarks for Chrome hasn't been fully loaded yet! Please refresh this page to load the settings.</span>
+    </div>
+</div>
+<div id="settings-box" class="display-box">
+    <table width="100%" cellspacing="0">
+        <tr id="all-categories" style="background-image: url(images/pane-selector-bg.png)">
+            <td id="category-general" class="category">
+                <img src="images/pane-selector-general.png"/>
+                <br/>
+                <span id="message-status-title">Status</span>
+            </td>
+            <td id="category-sync" class="category">
+                <img src="images/pane-selector-types.png"/>
+                <br/>
+                <span id="message-sync-title">Sync</span>
+            </td>
+            <td id="category-profiles" class="category">
+                <img src="images/pane-selector-profiles_TEMP.png"/>
+                <br/>
+                <span id="message-profiles-title">Profiles</span>
+            </td>
+            <td id="category-advanced" class="category">
+                <img src="images/pane-selector-advanced.png"/>
+                <br/>
+                <span id="message-advanced-title">Advanced</span>
+            </td>
+            <td align="left" valign="top"></td>
+        </tr>
+    </table>
+    <div id="all-sections">
+        <div id="category-general-section" class="section">
+            <div>
+                <div id="message-current-status" class="subsection-title">Current Status</div>
+                <div class="subsection">
+                    <div id="subsection-current-status"></div>
+                    <div id="subsection-current-status-details"></div>
+                    <table width="100%" cellspacing="0">
+                        <tr>
+                            <td align="left" id="subsection-current-last-sync"></td>
+                            <td align="right">
+                                <input id="message-sync-now" type="button" value="Synchronize Now"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-account" class="subsection-title">Account</div>
+                <div class="subsection">
+                    <div id="subsection-account-userinfo">Not logged in</div>
+                    <table width="100%" cellspacing="0">
+                        <tr>
+                            <td align="left">
+                                <input id="subsection-account-authenticate" type="button"/>
+                            </td>
+                            <td align="right">
+                                <input id="message-run-wizard" type="button" value="Run Setup Wizard"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="category-sync-section" class="section">
+            <div>
+                <div id="message-sync-types" class="subsection-title">Synchronization Types</div>
+                <div class="subsection">
+                    <input id="subsection-types-bookmarks" type="checkbox"/>
+                    <label for="subsection-types-bookmarks">
+                        <span id="message-bookmarks">Bookmarks</span>
+                    </label>
+                    <br/>
+                    <input id="subsection-types-tabs" type="checkbox"/>
+                    <label for="subsection-types-tabs">
+                        <span id="message-tabs">Open Tabs</span>
+                    </label>
+                    <div id="tabs-computer-name" style="margin-left: 20px">
+                        <span id="message-computer-name">Name for this computer:</span>
+                        <input id="computer-name" type="text" maxlength="30"/>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-sync-options" class="subsection-title">Synchronization Options</div>
+                <div class="subsection">
+                    <input id="subsection-options-autosync" type="checkbox"/>
+                    <label for="subsection-options-autosync">
+                        <span id="message-auto-sync">Enable Automatic Synchronization</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="category-profiles-section" class="section">
+            <div id="message-profiles-desc"> Use sync profiles to keep sensitive bookmarks where they belong. Create and manage sync profiles at my.xmarks.com. Then choose a profile here to control what Xmarks syncs to and from this computer.</div>
+            <br/>
+            <div>
+                <div class="subsection">
+                    <table style="width: 100%">
+                        <tr>
+                            <td id="message-create-and-manage">Create and manage sync profiles:</td>
+                            <td style="text-align: right">
+                                <input type="button" id="message-my-xmarks" value="My.Xmarks.com"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span id="message-current-profile">Current Profile</span>
+                                :
+                                <span id="cur-profile-name">&lt;none&gt;</span>
+                            </td>
+                            <td style="text-align: right">
+                                <input type="button" id="message-change-profile" value="Change Profile"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="category-restore-section" class="section">
+            <div id="message-restore-desc"> Use this feature to restore your bookmarks to an earlier version. Choose from any of the previous bookmarks sets safely backed up in your Xmarks web account over the last six months.</div>
+            <br/>
+            <div>
+                <div id="message-previous-sets" class="subsection-title">Previous Bookmark Sets</div>
+                <div class="subsection"><select id="restore-selectbox" size="12" style="width: 100%" disabled="true">
+                    <option id="restore-option-default">Retrieving list from server...</option>
+                </select>
+                    <div style="text-align: right">
+                        <input type="button" id="restore-preview" value="Preview Bookmarks" disabled="disabled"/>
+                        <input type="button" id="restore-bookmarks" value="Restore Bookmarks" disabled="disabled"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="category-advanced-section" class="section">
+            <div>
+                <div id="message-connection-security" class="subsection-title">Connection Security</div>
+                <div class="subsection">
+                    <span id="message-encryption">Encryption</span>
+                    : <select id="encryption-setting">
+                    <option id="message-no-encryption" value="-1">No Encryption</option>
+                    <option id="message-login-only" value="0" selected="selected">Login Only</option>
+                    <option id="message-encrypt-all" value="1">Encrypt All</option>
+                </select></div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-manual-repair" class="subsection-title">Manual Repair</div>
+                <div class="subsection">
+                    <div id="message-force-repair"> Repair is the preferred method to fix the local bookmark database when errors occur.</div>
+                    <div style="text-align: center; margin-top: 0.5em">
+                        <input type="button" id="message-repair-bookmarks" value="Repair Bookmarks"/>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-manual-upload" class="subsection-title">Manual Upload</div>
+                <div class="subsection">
+                    <div id="message-force-upload"> Uploading your bookmarks sends this browser's data to our servers. This will replace any data you currently have saved on our servers.</div>
+                    <div style="text-align: center; margin-top: 0.5em">
+                        <input type="button" id="message-upload-bookmarks" value="Upload Bookmarks"/>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-manual-download" class="subsection-title">Manual Download</div>
+                <div class="subsection">
+                    <div id="message-force-download"> Downloading your bookmarks will overwrite the data currently on this computer with the saved data you have on our servers.</div>
+                    <div style="text-align: center; margin-top: 0.5em">
+                        <input type="button" id="message-download-bookmarks" value="Download Bookmarks"/>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div>
+                <div id="message-logging" class="subsection-title">Logging</div>
+                <div class="subsection">
+                    <input type="checkbox" id="enable-logging"/>
+                    <label for="enable-logging">
+                        <span id="message-enable-logging">Enable logging</span>
+                    </label>
+                    <br/>
+                    <div id="logging-info" style="margin: 5px 15px 0 15px; font-size: 8pt"> To see log output, go to chrome://extensions/ and click the link to inspect the background.html view for Xmarks. (Note: if you don't see the option to inspect anything, you'll need to click the "Developer mode" link in the top right first.) Our log data is printed to the console, which can be toggled using the buttons at the bottom of the inspector. Any Chrome errors will be printed in red.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div style="font-size: 8pt">
+            <div id="version-string">Xmarks for Chrome, version 0.1</div>
+            <div>
+                <a id="message-report-bug" href="https://buy.xmarks.com/support.php?from=chrome-report-bug" target="_blank">Report bug</a>
+                |
+                <a id="message-recent-changes" href="https://buy.xmarks.com/notes.php" target="_blank">Recent changes</a>
+            </div>
+        </div>
+        <br/>
+        <input id="message-close" type="button" value="Close"/>
+    </div>
+</div>
+<div id="modaldialog"></div>
+</body>
+</html>

@@ -7,12 +7,6 @@
       "default_popup": "browseraction.html",
       "default_title": ""
    },
-   "content_scripts": [ {
-      "all_frames": true,
-      "js": [],
-      "matches": []
-   } ],
-   "default_locale": "en",
    "description": "",
    "manifest_version": 2,
    "minimum_chrome_version": "27",
