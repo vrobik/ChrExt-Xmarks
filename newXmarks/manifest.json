@@ -1,0 +1,24 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "browser_action": {
+      "default_icon": "images/xmarks-browseraction.png",
+      "default_popup": "browseraction.html",
+      "default_title": ""
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [],
+      "matches": []
+   } ],
+   "default_locale": "en",
+   "description": "",
+   "manifest_version": 2,
+   "minimum_chrome_version": "27",
+   "name": "New Xmarks",
+   "options_page": "settings.html",
+   "permissions": [ "bookmarks", "tabs", "unlimited_storage", "syncFileSystem", "identity", "http://*/*", "https://*/*" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.0.1"
+}
